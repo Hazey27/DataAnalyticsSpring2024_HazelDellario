@@ -12,7 +12,7 @@ library("readxl")
 
 
 # Setting path
-setwd("C:/Users/hazeldellario/Desktop/Homework/data_analysis/Lab 1")
+setwd("C:\\Users\\Hazel Dellario\\Documents\\GitHub\\DataAnalyticsSpring2024_HazelDellario\\Lab 1")
 
 EPI_data <- read.csv("2010EPI_data.csv", header = TRUE, skip = 1, na.strings = "..")
 
@@ -35,7 +35,7 @@ stem(EPI_data$EPI)
 hist(EPI_data$EPI)
 hist(EPI_data$EPI, breaks = seq(from = 30., to = 95., by = 1.0), prob=TRUE, main = "Histogram of EPI", xlab = "Frequency", ylab = "Density")
 
-lines(density(EPI_data$EPI, na.rm = TRUE, bw = 1.)) # Adds contour to histogram (try bw=“SJ”)
+lines(density(EPI_data$EPI, na.rm = TRUE, bw = "SJ"))
 
 rug(EPI_data$EPI) #shows x values over x axis
 
@@ -156,6 +156,28 @@ EPI_2016 <- read_xlsx("2016-epi.xlsx", sheet = 3) %>%  #many different sheets, c
 
 plot_stats(EPI_2016$x2016_epi_score, 5)
 
-ggplot(EPI_2016, aes(x = x2016_epi_score)) +
-  geom_bar()
+ggplot(EPI_2016[1:180, ], aes(x = country, y = x2016_epi_score)) +
+  geom_col() +
+  ylim(c(0, 100)) +
+  labs(title = "EPI Scores in 2016") +
+  xlab("Country") +
+  ylab("EPI Score in 2016")
+
+
+# Countries with Highest vs Lowest EPI Score -------------------------------------------------------------
+
+# Highest EPI Score: Finland
+# Lowest EPI Score: Somalia
+
+ggplot(EPI_2016[c(1, 180), ], aes(x = country, y = x2016_epi_score)) +
+  geom_col() +
+  ylim(c(0, 100)) +
+  labs(title = "EPI Scores in 2016") +
+  xlab("Country") +
+  ylab("EPI Score in 2016")
+
+
+
+
+
 
