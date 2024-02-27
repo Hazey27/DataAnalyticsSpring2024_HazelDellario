@@ -1,3 +1,6 @@
+
+
+
 bronx1$SALE.PRICE<-sub("\\$","",bronx1$SALE.PRICE) 
 bronx1$SALE.PRICE<-as.numeric(gsub(",","", bronx1$SALE.PRICE)) 
 bronx1$GROSS.SQUARE.FEET<-as.numeric(gsub(",","", bronx1$GROSS.SQUARE.FEET)) 

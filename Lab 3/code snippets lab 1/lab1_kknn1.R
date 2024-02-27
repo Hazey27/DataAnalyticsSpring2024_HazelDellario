@@ -11,5 +11,5 @@ summary(iris.kknn)
 fit <- fitted(iris.kknn)
 table(iris.valid$Species, fit)
 pcol <- as.character(as.numeric(iris.valid$Species))
-pairs(iris.valid[1:4], pch = pcol, col = c("green3", "red”)[(iris.valid$Species != fit)+1])
+pairs(iris.valid[1:4], pch = pcol, col = c("green3", "red")[(iris.valid$Species != fit)+1])
 

@@ -9,8 +9,11 @@ library("xlsx")
 
 #alternate
 bronx1<-read.xlsx("C:\\Users\\hazeldellario\\Documents\\GitHub\\DataAnalyticsSpring2024_HazelDellario\\Lab 3\\code snippets lab 1\\rollingsales_bronx.xls",pattern="BOROUGH",stringsAsFactors=FALSE,sheetIndex=1,startRow=5,header=TRUE)
-View(bronx1)
+# View(bronx1)
 #
+
+# Part 1 -------------------------------------------------------------------------------------------------
+
 attach(bronx1) # If you choose to attach, leave out the "data=." in lm regression
 SALE.PRICE<-sub("\\$","",SALE.PRICE) 
 SALE.PRICE<-as.numeric(gsub(",","", SALE.PRICE)) 
@@ -22,16 +25,16 @@ plot(log(GROSS.SQUARE.FEET), log(SALE.PRICE))
 bronx1$SALE.PRICE[which(bronx1$SALE.PRICE == 0)] = 0.1
 bronx1$GROSS.SQUARE.FEET[which(bronx1$GROSS.SQUARE.FEET == 0)] = 0.1
 
-m1<-lm(log(SALE.PRICE)~log(GROSS.SQUARE.FEET)) # how is this still undefined;;; no negatives, min is 0.1
+m1<-lm(log(bronx1$SALE.PRICE)~log(bronx1$GROSS.SQUARE.FEET))
 
 summary(m1)
 abline(m1,col="red",lwd=2) # it doesn't look right, but it honestly could be with how many data points are on the bottom
 
 plot(resid(m1))
 
-# log1p on all
-plot(log1p(GROSS.SQUARE.FEET), log1p(SALE.PRICE)) 
-m1.2<-lm(log1p(SALE.PRICE)~log1p(GROSS.SQUARE.FEET)) 
+# log on all
+plot(log(GROSS.SQUARE.FEET), log(SALE.PRICE)) 
+m1.2<-lm(log(bronx1$SALE.PRICE)~log(bronx1$GROSS.SQUARE.FEET)) 
 summary(m1.2)
 abline(m1.2,col="red",lwd=2)
 
@@ -40,7 +43,23 @@ plot(resid(m1.2))
 
 # Model 2
 
-m2<-lm(log(bronx1$SALE.PRICE)~log(bronx1$GROSS.SQUARE.FEET)+log(bronx1$LAND.SQUARE.FEET)+factor(bronx1$NEIGHBORHOOD))
+bronx1$LAND.SQUARE.FEET[which(bronx1$LAND.SQUARE.FEET == 0)] = 0.1
+
+
+m2<-lm(log(bronx1$SALE.PRICE)~log(bronx1$GROSS.SQUARE.FEET)+log(bronx1$LAND.SQUARE.FEET))#+factor(bronx1$NEIGHBORHOOD))
+
+# check_log = function(var) {
+#   NAs = sum(is.na(var))
+#   NaNs = sum(is.nan(var))
+#   Infs = length(which(var == Inf))
+#   problems = NAs + NaNs + Infs
+#   return(problems)
+# }
+# 
+# check_log(bronx1$SALE.PRICE)
+# check_log(bronx1$GROSS.SQUARE.FEET)
+# check_log(bronx1$LAND.SQUARE.FEET)
+
 summary(m2)
 plot(resid(m2))
 # Suppress intercept - using "0+ ..."
@@ -58,3 +77,5 @@ m4<-lm(log(bronx1$SALE.PRICE)~0+log(bronx1$GROSS.SQUARE.FEET)+log(bronx1$LAND.SQ
 summary(m4)
 plot(resid(m4))
 #
+
+
