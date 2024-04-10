@@ -1,4 +1,4 @@
-data(Titanic)
+titanic = data(Titanic)
 
 library("rpart")
 
@@ -12,7 +12,7 @@ str(Titanic)
 Titanic = data.frame(Titanic)
 Titanic$Class = as.factor(Titanic$Class)
 Titanic$Sex = as.factor(Titanic$Sex)
-Titanic$Age = as.double(Titanic$Age)
+Titanic$Age = as.factor(Titanic$Age)
 Titanic$Survived = as.factor(Titanic$Survived)
 Titanic$Freq = as.double(Titanic$Freq)
 
@@ -88,3 +88,51 @@ plot(titanic.phylo, type = "cladogram")
 plot(titanic.phylo, type = "unrooted")
 plot(titanic.phylo, type = "fan")
 plot(titanic.phylo, type = "radial")
+
+
+# Random Forest -----------------------------------------------------------------------------
+
+library("caret")
+library("doParallel")
+
+#train_indices = sample.int(length(Titanic[ , 1]) * 0.7, replace = TRUE)
+train_indices = round(runif(length(Titanic[ , 1]) * 0.7, min = 1, max = length(Titanic[ , 1])))
+train_data = Titanic[train_indices, ]
+test_data = Titanic[-train_indices, ]
+
+
+create_model <- function(type) {
+  mod.style <- trainControl(method = "repeatedcv",
+                            number = 5,
+                            repeats = 3)
+  
+  cl <- makePSOCKcluster(4)
+  registerDoParallel(cl)
+  
+  model = caret::train(Survived ~ .,
+                  data = train_data,
+                  model = type,
+                  tuneLength = 10, 
+                  trControl = mod.style)
+  stopCluster(cl)
+  return(model)
+}
+
+
+start.time <- Sys.time()
+rf_model <- create_model("rf")
+stop.time <- Sys.time()
+
+rf.runtime <- stop.time - start.time
+
+train_data$preds = predict(rf_model, newdata = train_data[ , -4])
+test_data$preds = predict(rf_model, newdata = test_data[ , -4])
+
+confusionMatrix(reference = train_data$Survived, data = train_data$preds, positive = "Yes")
+confusionMatrix(reference = test_data$Survived, data = test_data$preds, positive = "Yes")
+
+# Prediction on training data passable
+# Prediction on test data awful (~26.7%)
+
+
+
